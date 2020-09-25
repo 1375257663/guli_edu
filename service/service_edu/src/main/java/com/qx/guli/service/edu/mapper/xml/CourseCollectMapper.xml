@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qx.guli.service.edu.mapper.CourseCollectMapper">
+
+    <select id="selectCollectVoList" resultType="com.qx.guli.service.edu.entity.vo.CourseCollectVo">
+        SELECT
+            cc.id,
+            cc.course_id courseId,
+            c.cover,
+            c.title,
+            c.price,
+            t.`name` AS teacherName,
+            cc.gmt_create AS gmtCreate
+        FROM edu_course_collect cc
+        LEFT JOIN edu_course c ON  cc.course_id = c.id
+        LEFT JOIN edu_teacher t ON t.id = c.teacher_id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

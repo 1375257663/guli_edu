@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qx.guli.service.edu.mapper.SubjectMapper">
+
+    <resultMap id="NestedList" type="com.qx.guli.service.edu.entity.vo.SubjectVo">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="sort" property="sort"/>
+<!--        通过column=“id”再次调用selectNestedListByParentId查询-->
+        <collection
+                property="children"
+                column="id"
+                ofType="com.qx.guli.service.edu.entity.vo.SubjectVo"
+                select="com.qx.guli.service.edu.mapper.SubjectMapper.selectNestedListByParentId"/>
+
+    </resultMap>
+<!--    List<SubjectVo> selectNestedListByParentId(String s);-->
+    <select id="selectNestedListByParentId" resultMap="NestedList" >
+        
+        select id,title,sort from edu_subject where parent_id = #{parentId}
+        
+    </select>
+    
+    
+</mapper>

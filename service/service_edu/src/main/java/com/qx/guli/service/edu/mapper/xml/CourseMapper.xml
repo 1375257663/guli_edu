@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qx.guli.service.edu.mapper.CourseMapper">
+
+    <sql id="columnSql">
+        c.id,
+        c.price,
+        c.title,
+        c.cover,
+        c.buy_count AS buyCount,
+        c.view_count AS viewCount,
+        c.status,
+        c.gmt_create AS gmtCreate,
+        c.lesson_num AS lessonNum,
+
+        s2.title As subjectParentTitle,
+        s1.title AS subjectTitle,
+
+        t.name AS teacherName
+    </sql>
+    <sql id="ConditionSql">
+        left join edu_subject s1 on s1.id = c.subject_id
+        left join edu_subject s2 on s2.id = c.subject_parent_id
+        left join edu_teacher t on t.id = c.teacher_id
+    </sql>
+    <select id="selectPageByCourseVo" resultType="com.qx.guli.service.edu.entity.vo.CourseVo">
+        select
+            <include refid="columnSql"/>
+        From edu_course c
+            <include refid="ConditionSql"/>
+        ${ew.customSqlSegment}
+    </select>
+    
+    <sql id="cpColumn">
+            c.id,
+            c.cover,
+            c.title,
+            c.lesson_num AS lessonNum,
+            c.price,
+
+            s2.title AS subjectParentTitle,
+            s1.title AS subjectTitle,
+
+            t.name AS teacherName
+    </sql>
+    <select id="selectCoursePublishVoById" resultType="com.qx.guli.service.edu.entity.vo.CoursePublishVo">
+        SELECT
+            <include refid="cpColumn"/>
+        FROM edu_course c
+            <include refid="ConditionSql"/>
+            WHERE c.id = #{id}
+    </select>
+    <select id="selectWebCourseVoById" resultType="com.qx.guli.service.edu.entity.vo.WebCourseVo"
+            parameterType="java.lang.String">
+        SELECT
+            c.id,
+            c.title,
+            CONVERT(c.price, DECIMAL(8,2)) AS price,
+            c.lesson_num,
+            c.cover,
+            c.buy_count AS buyCount,
+            c.view_count AS viewCount,
+            cd.description,
+            t.id AS teacherId,
+            t.`name` AS teacherName,
+            t.intro,
+            t.avatar,
+            s1.id AS subjectLevelOneId,
+            s1.title AS subjectLevelOne,
+            s2.id AS subjectLevelTwoId,
+            s2.title AS subjectLevelTwo
+        FROM edu_course c
+        LEFT JOIN edu_course_description cd on cd.id = c.id
+        LEFT JOIN edu_teacher t on t.id = c.teacher_id
+        LEFT JOIN edu_subject s1 on s1.id = c.subject_parent_id
+        LEFT JOIN edu_subject s2 on s2.id = c.subject_id
+        WHERE c.id = #{courseId}
+    </select>
+    <select id="selectCourseDtoById" resultType="com.qx.guli.service.base.dto.CourseDto">
+        SELECT
+            c.id,
+            c.title,
+            CONVERT(c.price, DECIMAL(8,2)) AS price,
+            c.cover,
+            t.name AS teacherName
+        FROM edu_course c
+        LEFT JOIN edu_teacher t ON c.teacher_id = t.id
+        WHERE c.id = #{id}
+    </select>
+    <select id="selectCountByDay" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            edu_course
+        WHERE
+            DATE(gmt_create) = #{day}
+    </select>
+
+</mapper>

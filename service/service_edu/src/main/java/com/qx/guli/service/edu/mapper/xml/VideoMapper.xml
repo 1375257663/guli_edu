@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qx.guli.service.edu.mapper.VideoMapper">
+
+    <select id="selectVideoVoList" resultType="com.qx.guli.service.edu.entity.vo.VideoVo">
+        SELECT
+            id,
+            title,
+            is_free free,
+            sort,
+            video_source_id
+        FROM
+            edu_video
+	        ${ew.customSqlSegment}
+    </select>
+    <select id="selectVideoViewNum" resultType="java.lang.Integer">
+        SELECT
+            SUM(play_count)
+        FROM
+            edu_video
+        WHERE
+            DATE(gmt_create) = #{day}
+    </select>
+</mapper>
